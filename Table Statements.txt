@@ -1,0 +1,57 @@
+SET Foreign_Key_Checks = 0;
+
+CREATE TABLE IF NOT EXISTS User
+(Username varchar(15) NOT NULL,
+Password char NOT NULL,
+Fname varchar(15) NOT NULL,
+Lname varchar(15),
+UserID char NOT NULL,
+PRIMARY KEY (UserID),
+FOREIGN KEY(AdminID) REFERENCES Admin(AdminID),
+FOREIGN KEY (WishID) REFERENCES Wish(WishID));
+
+CREATE TABLE IF NOT EXISTS Page
+(Title char NOT NULL,
+Bio char,
+YearFounded DATE NOT NULL,
+FavoriteGenre char,
+Wishlist char,
+FOREIGN KEY(MostPlayedGame) REFERENCES Game(Title),
+FOREIGN KEY(DevName) REFERENCES DEVELOPER(DevName),
+FOREIGN KEY(LicName) REFERENCES LICENSOR(LicName),
+FOREIGN KEY(PubName) REFERENCES PUBLISHER(PubName));
+
+CREATE TABLE IF NOT EXISTS Systems
+(Specs char,
+PRIMARY KEY(SysName),
+FOREIGN KEY(LicName) REFERENCES LICENSOR(LicName),
+FOREIGN KEY(LibID) REFERENCES Library(LibID));
+
+CREATE TABLE IF NOT EXISTS Admin
+(LevelOfAcess char,
+PRIMARY KEY(AdminID));
+
+CREATE TABLE IF NOT EXISTS Publisher
+(Subsidiaries char,
+ParentCompany char,
+PRIMARY KEY (PubName));
+
+CREATE TABLE IF NOT EXISTS Developer
+(YearFounded DATE NOT NULL,
+PRIMARY KEY(DevName));
+
+CREATE TABLE IF NOT EXISTS Game
+(PRIMARY KEY(Title),
+FOREIGN KEY(Developer) REFERENCES DEVELOPER(DevName),
+FOREIGN KEY(License) REFERENCES LICENSOR(LicName),
+FOREIGN KEY(System) REFERENCES Systems(SysName));
+
+CREATE TABLE IF NOT EXISTS Library
+(PRIMARY KEY(LibID),
+FOREIGN KEY(System) REFERENCES Systems(SysName),
+FOREIGN KEY(Title) REFERENCES Game(Title),
+FOREIGN KEY(PubName) REFERENCES PUBLISHER(PubName));
+
+CREATE TABLE IF NOT EXISTS Wish
+(PRIMARY KEY(WishID),
+Games char);
