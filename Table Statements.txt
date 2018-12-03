@@ -1,83 +1,171 @@
 SET Foreign_Key_Checks = 0;
 
-CREATE TABLE IF NOT EXISTS User
-(Username varchar(15) NOT NULL,
-Password char NOT NULL,
-Fname varchar(15) NOT NULL,
-Lname varchar(15),
-UserID char NOT NULL,
-PRIMARY KEY (UserID),
-FOREIGN KEY(AdminID) REFERENCES Admin(AdminID),
-FOREIGN KEY (WishID) REFERENCES Wish(WishID));
+CREATE TABLE IF NOT EXISTS MainPage
 
-CREATE TABLE IF NOT EXISTS Page
 (Title char NOT NULL,
 Bio char,
-YearFounded DATE NOT NULL,
+YearFounded DATE,
+id char NOT NULL,
 FavoriteGenre char,
-Wishlist char,
-FOREIGN KEY(MostPlayedGame) REFERENCES Game(Title),
-FOREIGN KEY(DevName) REFERENCES DEVELOPER(DevName),
-FOREIGN KEY(LicName) REFERENCES LICENSOR(LicName),
-FOREIGN KEY(PubName) REFERENCES PUBLISHER(PubName));
+MostPlayedGame char,
 
-CREATE TABLE IF NOT EXISTS Systems
-(Specs char,
-PRIMARY KEY(SysName),
-FOREIGN KEY(LicName) REFERENCES LICENSOR(LicName),
-FOREIGN KEY(LibID) REFERENCES Library(LibID));
+PRIMARY KEY (id));
 
-CREATE TABLE IF NOT EXISTS Admin
-(LevelOfAcess char,
-PRIMARY KEY(AdminID));
+CREATE TABLE IF NOT EXISTS User
 
-CREATE TABLE IF NOT EXISTS Publisher
-(Subsidiaries char,
-ParentCompany char,
-PRIMARY KEY (PubName));
+(Username varchar(15) NOT NULL,
 
-CREATE TABLE IF NOT EXISTS Developer
-(YearFounded DATE NOT NULL,
-PRIMARY KEY(DevName));
+Password char NOT NULL,
 
-CREATE TABLE IF NOT EXISTS Game
-(PRIMARY KEY(Title),
-FOREIGN KEY(Developer) REFERENCES DEVELOPER(DevName),
-FOREIGN KEY(License) REFERENCES LICENSOR(LicName),
-FOREIGN KEY(System) REFERENCES Systems(SysName));
+Fname varchar(15) NOT NULL,
+
+Lname varchar(15),
+
+UserID char NOT NULL,
+
+PRIMARY KEY (UserID),
+FOREIGN KEY (UserID) REFERENCES MainPage(id));
 
 CREATE TABLE IF NOT EXISTS Library
-(PRIMARY KEY(LibID),
-FOREIGN KEY(System) REFERENCES Systems(SysName),
-FOREIGN KEY(Title) REFERENCES Game(Title),
-FOREIGN KEY(PubName) REFERENCES PUBLISHER(PubName));
 
-CREATE TABLE IF NOT EXISTS Wish
-(PRIMARY KEY(WishID),
-Games char);
+(LibID varchar(15) NOT NULL,
+
+LibName char,
+
+OwnerID char NOT NULL,
+
+PRIMARY KEY(LibID),
+
+FOREIGN KEY (OwnerID) REFERENCES User(UserID));
+
+CREATE TABLE IF NOT EXISTS Admin
+
+(LevelOfAcess int,
+
+AdminID char NOT NULL,
+
+PRIMARY KEY(AdminID),
+FOREIGN KEY (AdminID) REFERENCES User(UserID));
+
+CREATE TABLE IF NOT EXISTS Publisher
+
+(Subsidiaries char,
+
+ParentCompany char,
+
+PubID char NOT NULL, 
+PubName char,
+PRIMARY KEY (PubName),
+FOREIGN KEY (PubID) REFERENCES User(UserID));
+
+CREATE TABLE IF NOT EXISTS Developer
+
+(YearFounded DATE NOT NULL,
+DevName char NOT NULL,
+DevID char NOT NULL,
+
+
+PRIMARY KEY(DevName),
+FOREIGN KEY (DevID) REFERENCES User(UserID));
 
 CREATE TABLE IF NOT EXISTS Licensor
+
 (YearFounded DATE NOT NULL,
+
 LicName char NOT NULL,
-PRIMARY KEY (LicName));
+LicID char NOT NULL,
 
-CREATE TABLE IF NOT EXISTS Likes
-(FOREIGN KEY (UserID) REFERENCES User(UserID));
+PRIMARY KEY (LicName),
+FOREIGN KEY (LicID) REFERENCES User(UserID));
 
-CREATE TABLE IF NOT EXISTST Update
-(Message char NOT NULL,
-PRIMARY KEY (Message),
-FOREIGN KEY (UserLikes) REFERENCES Likes(UserID));
+
+
+CREATE TABLE IF NOT EXISTS Systems
+
+(Specs char,
+
+SysName char NOT NULL,
+SysID char NOT NULL,
+OwnedBy char NOT NULL,
+
+PRIMARY KEY(SysName),
+
+FOREIGN KEY(OwnedBY) REFERENCES Licensor(LicName),
+
+FOREIGN KEY(SysID) REFERENCES Library(LibID));
+
+CREATE TABLE IF NOT EXISTS Wish
+
+(WishID char,
+DesiredBy char,
+PRIMARY KEY(WishID),
+FOREIGN KEY (DesiredBy) REFERENCES User(UserID));
+
+CREATE TABLE IF NOT EXISTS Game
+
+(Title char NOT NULL,
+DevelopedBy char,
+PublishedBy char,
+LicensedBy char,
+OwnedBy char,
+ReleasedFor char,
+WishedForBy char,
+
+PRIMARY KEY(Title),
+FOREIGN KEY(DevelopedBy) REFERENCES Developer(DevName),
+FOREIGN KEY(LicensedBy) REFERENCES Licensor(LicName),
+FOREIGN KEY(ReleasedFor) REFERENCES Systems(SysName),
+FOREIGN KEY (OwnedBy) REFERENCES Library(LibID),
+FOREIGN KEY (WishedForBy) REFERENCES Wish(WishID));
 
 CREATE TABLE IF NOT EXISTS Feed
-(CompaniesWatched char,
-FeedID char NOT NULL,
-PRIMARY KEY (FeedID),
-FOREIGN KEY (Message) REFERENCES Update(Message));
 
-CREATE TABLE IF NOT EXISTS DiscBoard
-(DiscussionTitle char NOT NULL);
+(FeedID char NOT NULL,
+CompaniesWatched char,
+
+PRIMARY KEY (FeedID),
+FOREIGN KEY (FeedID) REFERENCES User(UserID));
+
+CREATE TABLE IF NOT EXISTS Post
+
+(MessageID char NOT NULL,
+BelongsTo char,
+Message char NOT NULL,
+FeedID char NOT NULL,
+TimeOfPost TIME NOT NULL,
+UserName char NOT NULL,
+
+PRIMARY KEY (MessageID),
+FOREIGN KEY (FeedID) REFERENCES Feed(FeedID),
+FOREIGN KEY (UserName) REFERENCES User(UserID));
+
+CREATE TABLE IF NOT EXISTS Likes
+
+(LikeID char NOT NULL,
+PostedBy char NOT NULL,
+PostID char NOT NULL,
+
+PRIMARY KEY (LikeID),
+FOREIGN KEY (LikeID) REFERENCES User(UserID),
+FOREIGN KEY (PostID) REFERENCES Post(MessageID));
 
 CREATE TABLE IF NOT EXISTS Topics
-(TopicTitle char NOT NULL,
-URL char NOT NULL);
+
+(ThreadID char NOT NULL,
+
+TopicTitle char NOT NULL,
+
+PRIMARY KEY (ThreadID));
+
+CREATE TABLE IF NOT EXISTS Comments
+
+(CommentID char NOT NULL,
+Message char NOT NULL,
+ThreadID char,
+PostID char,
+UserID char NOT NULL,
+PRIMARY KEY (CommentID),
+FOREIGN KEY (ThreadID) REFERENCES Topics(ThreadID),
+FOREIGN KEY (PostID) REFERENCES Post(MessageID),
+FOREIGN KEY (UserID) REFERENCES User(UserID));
+
