@@ -55,3 +55,29 @@ FOREIGN KEY(PubName) REFERENCES PUBLISHER(PubName));
 CREATE TABLE IF NOT EXISTS Wish
 (PRIMARY KEY(WishID),
 Games char);
+
+CREATE TABLE IF NOT EXISTS Licensor
+(YearFounded DATE NOT NULL,
+LicName char NOT NULL,
+PRIMARY KEY (LicName));
+
+CREATE TABLE IF NOT EXISTS Likes
+(FOREIGN KEY (UserID) REFERENCES User(UserID));
+
+CREATE TABLE IF NOT EXISTST Update
+(Message char NOT NULL,
+PRIMARY KEY (Message),
+FOREIGN KEY (UserLikes) REFERENCES Likes(UserID));
+
+CREATE TABLE IF NOT EXISTS Feed
+(CompaniesWatched char,
+FeedID char NOT NULL,
+PRIMARY KEY (FeedID),
+FOREIGN KEY (Message) REFERENCES Update(Message));
+
+CREATE TABLE IF NOT EXISTS DiscBoard
+(DiscussionTitle char NOT NULL);
+
+CREATE TABLE IF NOT EXISTS Topics
+(TopicTitle char NOT NULL,
+URL char NOT NULL);
